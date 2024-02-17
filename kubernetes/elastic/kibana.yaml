@@ -134,9 +134,87 @@ spec:
                   }
                   '
 
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/service_enriched.json \
+                "${ELASTIC_URL}/_component_template/service_enriched"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/registry_value.json \
+                "${ELASTIC_URL}/_component_template/registry_value"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/file_data_plaintext.json \
+                "${ELASTIC_URL}/_component_template/file_data_plaintext"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/file_data_enriched.json \
+                "${ELASTIC_URL}/_component_template/file_data_enriched"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/text_embeddings.json \
+                "${ELASTIC_URL}/_component_template/text_embeddings"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/process_category.json \
+                "${ELASTIC_URL}/_component_template/process_category"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/file_information.json \
+                "${ELASTIC_URL}/_component_template/file_information"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/file_data_sourcecode.json \
+                "${ELASTIC_URL}/_component_template/file_data_sourcecode"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/extracted_hash.json \
+                "${ELASTIC_URL}/_component_template/extracted_hash"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/authentication_data.json \
+                "${ELASTIC_URL}/_component_template/authentication_data"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/named_pipe.json \
+                "${ELASTIC_URL}/_component_template/named_pipe"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/fluentd.json \
+                "${ELASTIC_URL}/_component_template/fluentd"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/network_connection.json \
+                "${ELASTIC_URL}/_component_template/network_connection"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/pipeline_de-duplicate.json \
+                "${ELASTIC_URL}/_ingest/pipeline/de-duplicate"
+
+              curl --user "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PASSWORD}" \
+                -XPUT -H "Content-Type: application/json" \
+                -d @/opt/elastic/indexes/nemesis_index_template.json \
+                "${ELASTIC_URL}/_index_template/nemesis"
+
           volumeMounts:
             - name: config
               mountPath: /etc/kibana-config
+            - name: elastic-indexes
+              mountPath: /opt/elastic/indexes/
+              readOnly: false
           env:
             - name: ELASTIC_URL
               value: http://nemesis-es-http.default.svc.cluster.local:9200
@@ -157,6 +235,9 @@ spec:
         - name: config
           configMap:
             name: kibana
+        - name: elastic-indexes
+          configMap:
+            name: elastic-indexes
   backoffLimit: 1
 ---
 apiVersion: v1

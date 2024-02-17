@@ -1,0 +1,1738 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastic-indexes
+data:
+  authentication_data.json: |
+    {
+      "template": {
+            "settings": {
+          "index": {
+            "codec": "best_compression"
+          }
+        },
+      "mappings": {
+        "properties": {
+          "data": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "messageId": {
+                "type": "keyword"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "source": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "notes": {
+            "type": "text"
+          },
+          "originatingObjectId": {
+            "type": "keyword"
+          },
+          "type": {
+            "type": "keyword"
+          },
+          "uri": {
+            "type": "keyword"
+          },
+          "username": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    }
+
+  extracted_hash.json: |
+    {
+    "template": {
+          "settings": {
+          "index": {
+            "codec": "best_compression"
+          }
+        },
+      "mappings": {
+        "properties": {
+          "checkedAgainstTopPasswords": {
+            "type": "boolean"
+          },
+          "hashType": {
+            "type": "keyword"
+          },
+          "hashValue": {
+            "type": "keyword"
+          },
+          "isCracked": {
+            "type": "boolean"
+          },
+          "jtrFormattedValue": {
+            "type": "keyword"
+          },
+          "jtrPotLine": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "messageId": {
+                "type": "keyword"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "originatingObjectId": {
+            "type": "keyword"
+          },
+          "plainkeywordValue": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    }
+    }
+
+  file_data_enriched.json: |
+    {
+        "template":
+        {
+            "settings":
+            {
+                "index":
+                {
+                    "codec": "best_compression"
+                }
+            },
+            "mappings":
+            {
+                "properties":
+                {
+                    "extension":
+                    {
+                        "type": "keyword"
+                    },
+                    "metadata":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "agentId":
+                            {
+                                "type": "keyword"
+                            },
+                            "automated":
+                            {
+                                "type": "boolean"
+                            },
+                            "agentType":
+                            {
+                                "type": "keyword"
+                            },
+                            "dataType":
+                            {
+                                "type": "keyword"
+                            },
+                            "project":
+                            {
+                                "type": "keyword"
+                            },
+                            "expiration":
+                            {
+                                "type": "date"
+                            },
+                            "timestamp":
+                            {
+                                "type": "date"
+                            }
+                        }
+                    },
+                    "convertedPdf":
+                    {
+                        "type": "keyword"
+                    },
+                    "extractedSourceURL":
+                    {
+                        "eager_global_ordinals": false,
+                        "index_phrases": false,
+                        "fielddata": false,
+                        "norms": true,
+                        "index": false,
+                        "store": false,
+                        "type": "text"
+                    },
+                    "originatingObjectId":
+                    {
+                        "type": "keyword"
+                    },
+                    "convertedPdfURL":
+                    {
+                        "eager_global_ordinals": false,
+                        "index_phrases": false,
+                        "fielddata": false,
+                        "norms": true,
+                        "index": false,
+                        "store": false,
+                        "type": "text"
+                    },
+                    "path":
+                    {
+                        "eager_global_ordinals": false,
+                        "index_phrases": false,
+                        "fielddata": false,
+                        "norms": true,
+                        "index": false,
+                        "store": false,
+                        "type": "text"
+                    },
+                    "extractedSource":
+                    {
+                        "type": "keyword"
+                    },
+                    "isSourceCode":
+                    {
+                        "type": "boolean"
+                    },
+                    "magicType":
+                    {
+                        "type": "text"
+                    },
+                    "extractedPlaintextURL":
+                    {
+                        "eager_global_ordinals": false,
+                        "index_phrases": false,
+                        "fielddata": false,
+                        "norms": true,
+                        "index": false,
+                        "store": false,
+                        "type": "text"
+                    },
+                    "extractedPlaintext":
+                    {
+                        "type": "keyword"
+                    },
+                    "objectId":
+                    {
+                        "type": "keyword"
+                    },
+                    "nemesisFileType":
+                    {
+                        "type": "keyword"
+                    },
+                    "canaries":
+                    {
+                        "type": "object"
+                    },
+                    "parsedData":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "dotnetAssembly":
+                            {
+                                "type": "object",
+                                "properties":
+                                {
+                                    "imports":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "dlls":
+                                            {
+                                                "type": "object",
+                                                "properties":
+                                                {
+                                                    "name":
+                                                    {
+                                                        "type": "keyword"
+                                                    },
+                                                    "symbols":
+                                                    {
+                                                        "type": "object",
+                                                        "properties":
+                                                        {
+                                                            "funcName":
+                                                            {
+                                                                "type": "keyword"
+                                                            },
+                                                            "offset":
+                                                            {
+                                                                "coerce": true,
+                                                                "index": false,
+                                                                "ignore_malformed": false,
+                                                                "store": false,
+                                                                "type": "long",
+                                                                "doc_values": true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "exports":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "symbols":
+                                            {
+                                                "type": "object",
+                                                "properties":
+                                                {
+                                                    "funcName":
+                                                    {
+                                                        "type": "keyword"
+                                                    },
+                                                    "offset":
+                                                    {
+                                                        "coerce": true,
+                                                        "index": false,
+                                                        "ignore_malformed": false,
+                                                        "store": false,
+                                                        "type": "long",
+                                                        "doc_values": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "typerefs":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "functionName":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "moduleName":
+                                            {
+                                                "type": "keyword"
+                                            }
+                                        }
+                                    },
+                                    "header":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "majorSubsystemVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "timeDateStamp":
+                                            {
+                                                "type": "date"
+                                            },
+                                            "majorOperatingSystemVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "minorLinkerVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "majorLinkerVersion":
+                                            {
+                                                "type": "long"
+                                            }
+                                        }
+                                    },
+                                    "versionInfo":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "fileDescription":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "internalName":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "productVersion":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "comments":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "legalTrademarks":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "companyName":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "legalCopyright":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "assemblyVersion":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "fileVersion":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "originalFilename":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "productName":
+                                            {
+                                                "type": "keyword"
+                                            }
+                                        }
+                                    },
+                                    "implMapEntries":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "functionName":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "moduleName":
+                                            {
+                                                "type": "keyword"
+                                            }
+                                        }
+                                    },
+                                    "dotnetVersion":
+                                    {
+                                        "type": "keyword"
+                                    },
+                                    "signatures":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "signers":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "version":
+                                            {
+                                                "type": "long"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "pe":
+                            {
+                                "type": "object",
+                                "properties":
+                                {
+                                    "imports":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "dlls":
+                                            {
+                                                "type": "object",
+                                                "properties":
+                                                {
+                                                    "name":
+                                                    {
+                                                        "type": "keyword"
+                                                    },
+                                                    "symbols":
+                                                    {
+                                                        "type": "object",
+                                                        "properties":
+                                                        {
+                                                            "funcName":
+                                                            {
+                                                                "type": "keyword"
+                                                            },
+                                                            "offset":
+                                                            {
+                                                                "coerce": true,
+                                                                "index": false,
+                                                                "ignore_malformed": false,
+                                                                "store": false,
+                                                                "type": "long",
+                                                                "doc_values": true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "exports":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "symbols":
+                                            {
+                                                "type": "object",
+                                                "properties":
+                                                {
+                                                    "funcName":
+                                                    {
+                                                        "type": "keyword"
+                                                    },
+                                                    "offset":
+                                                    {
+                                                        "coerce": true,
+                                                        "index": false,
+                                                        "ignore_malformed": false,
+                                                        "store": false,
+                                                        "type": "long",
+                                                        "doc_values": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "header":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "majorSubsystemVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "timeDateStamp":
+                                            {
+                                                "type": "date"
+                                            },
+                                            "majorOperatingSystemVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "minorSubsystemVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "minorLinkerVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "majorImageVersion":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "majorLinkerVersion":
+                                            {
+                                                "type": "long"
+                                            }
+                                        }
+                                    },
+                                    "versionInfo":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "fileDescription":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "internalName":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "productVersion":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "companyName":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "legalCopyright":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "fileVersion":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "originalFilename":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "productName":
+                                            {
+                                                "type": "keyword"
+                                            }
+                                        }
+                                    },
+                                    "signatures":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "signers":
+                                            {
+                                                "type": "text"
+                                            },
+                                            "version":
+                                            {
+                                                "type": "long"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "archive":
+                            {
+                                "type": "object",
+                                "properties":
+                                {
+                                    "entries":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "compressSize":
+                                            {
+                                                "type": "long"
+                                            },
+                                            "name":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "lastModified":
+                                            {
+                                                "type": "date"
+                                            },
+                                            "uncompressSize":
+                                            {
+                                                "type": "long"
+                                            }
+                                        }
+                                    },
+                                    "uncompressedSize":
+                                    {
+                                        "type": "long"
+                                    },
+                                    "type":
+                                    {
+                                        "type": "keyword"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "isBinary":
+                    {
+                        "type": "boolean"
+                    },
+                    "analysis":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "dotnetAnalysis":
+                            {
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "enrichmentsSuccess":
+                    {
+                        "type": "keyword"
+                    },
+                    "yaraMatches":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "yaraMatches":
+                            {
+                                "type": "object",
+                                "properties":
+                                {
+                                    "ruleFile":
+                                    {
+                                        "type": "keyword"
+                                    },
+                                    "ruleText":
+                                    {
+                                        "eager_global_ordinals": false,
+                                        "index_phrases": false,
+                                        "fielddata": false,
+                                        "norms": true,
+                                        "index": false,
+                                        "store": false,
+                                        "type": "text"
+                                    },
+                                    "ruleName":
+                                    {
+                                        "type": "keyword"
+                                    },
+                                    "ruleDescription":
+                                    {
+                                        "type": "text"
+                                    },
+                                    "ruleStringMatches":
+                                    {
+                                        "type": "object",
+                                        "properties":
+                                        {
+                                            "identifier":
+                                            {
+                                                "type": "keyword"
+                                            },
+                                            "yaraStringMatchInstances":
+                                            {
+                                                "type": "object",
+                                                "properties":
+                                                {
+                                                    "matchedData":
+                                                    {
+                                                        "eager_global_ordinals": false,
+                                                        "norms": false,
+                                                        "index": false,
+                                                        "store": false,
+                                                        "type": "keyword",
+                                                        "split_queries_on_whitespace": false,
+                                                        "doc_values": true
+                                                    },
+                                                    "offset":
+                                                    {
+                                                        "coerce": true,
+                                                        "index": false,
+                                                        "ignore_malformed": false,
+                                                        "store": false,
+                                                        "type": "long",
+                                                        "doc_values": true
+                                                    },
+                                                    "length":
+                                                    {
+                                                        "coerce": true,
+                                                        "index": false,
+                                                        "ignore_malformed": false,
+                                                        "store": false,
+                                                        "type": "long",
+                                                        "doc_values": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "yaraMatchesPresent":
+                            {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "enrichmentsFailure":
+                    {
+                        "type": "keyword"
+                    },
+                    "objectIdURL":
+                    {
+                        "eager_global_ordinals": false,
+                        "index_phrases": false,
+                        "fielddata": false,
+                        "norms": true,
+                        "index": false,
+                        "store": false,
+                        "type": "text"
+                    },
+                    "size":
+                    {
+                        "coerce": true,
+                        "index": false,
+                        "ignore_malformed": false,
+                        "store": false,
+                        "type": "long",
+                        "doc_values": true
+                    },
+                    "hashes":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "sha1":
+                            {
+                                "type": "keyword"
+                            },
+                            "sha256":
+                            {
+                                "type": "keyword"
+                            },
+                            "md5":
+                            {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "name":
+                    {
+                        "type": "keyword"
+                    }
+                }
+            }
+        }
+    }
+
+  file_data_plaintext.json: |
+    {
+        "template": {
+              "settings": {
+          "index": {
+            "codec": "best_compression"
+          }
+        },
+      "mappings": {
+        "properties": {
+          "enrichmentsSuccess": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "automated": {
+                "type": "boolean"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "objectId": {
+            "type": "keyword"
+          },
+          "objectIdURL": {
+            "type": "text"
+          },
+          "originatingObjectConvertedPdf": {
+            "type": "text"
+          },
+          "originatingObjectConvertedPdfUrl": {
+            "type": "text"
+          },
+          "originatingObjectId": {
+            "type": "keyword"
+          },
+          "originatingObjectPath": {
+            "type": "text"
+          },
+          "originatingObjectSize": {
+            "type": "long"
+          },
+          "originatingObjectURL": {
+            "type": "text"
+          },
+          "size": {
+            "type": "long"
+          },
+          "text": {
+            "type": "text"
+          },
+          "wordCount": {
+            "type": "long"
+          }
+        }
+      }
+    }
+    }
+
+  file_data_sourcecode.json: |
+    {
+      "template": {
+            "settings": {
+          "index": {
+            "codec": "best_compression"
+          }
+        },
+      "mappings": {
+        "properties": {
+          "downloadURL": {
+            "type": "text"
+          },
+          "extension": {
+            "type": "keyword"
+          },
+          "fileObjectURL": {
+            "type": "text"
+          },
+          "language": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "automated": {
+                "type": "boolean"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "name": {
+            "type": "keyword"
+          },
+          "objectId": {
+            "type": "keyword"
+          },
+          "path": {
+            "type": "text"
+          },
+          "size": {
+            "type": "long"
+          },
+          "text": {
+            "type": "text"
+          }
+        }
+      }
+    }
+    }
+
+  file_information.json: |
+    {
+      "template": {
+            "settings": {
+          "index": {
+            "codec": "best_compression"
+          }
+        },
+      "mappings": {
+      "properties": {
+        "path": {
+          "eager_global_ordinals": false,
+          "index_phrases": false,
+          "fielddata": false,
+          "norms": true,
+          "index": false,
+          "store": false,
+          "type": "text"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "agentId": {
+              "type": "keyword"
+            },
+            "automated": {
+              "type": "boolean"
+            },
+            "agentType": {
+              "type": "keyword"
+            },
+            "dataType": {
+              "type": "keyword"
+            },
+            "project": {
+              "type": "keyword"
+            },
+            "expiration": {
+              "type": "date"
+            },
+            "source": {
+              "type": "keyword"
+            },
+            "timestamp": {
+              "type": "date"
+            }
+          }
+        },
+        "size": {
+          "type": "long"
+        },
+        "modificationTime": {
+          "type": "date"
+        },
+        "type": {
+          "type": "keyword"
+        },
+        "accessTime": {
+          "type": "date"
+        }
+      }
+    }
+    }
+    }
+
+  fluentd.json: |
+    {
+      "template": {
+        "settings": {
+          "index.codec": "best_compression"
+        },
+        "mappings": {
+          "properties": {
+            "@timestamp": {
+              "type": "date"
+            },
+            "docker": {
+              "type": "object",
+              "properties": {
+                "container_id": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "kubernetes": {
+              "type": "object",
+              "properties": {
+                "container_image": {
+                  "type": "keyword"
+                },
+                "container_image_id": {
+                  "type": "keyword"
+                },
+                "container_name": {
+                  "type": "keyword"
+                },
+                "host": {
+                  "type": "keyword"
+                },
+                "labels": {
+                  "type": "object",
+                  "properties": {
+                    "app": {
+                      "type": "keyword"
+                    },
+                    "app_kubernetes_io/component": {
+                      "type": "keyword"
+                    },
+                    "app_kubernetes_io/instance": {
+                      "type": "keyword"
+                    },
+                    "app_kubernetes_io/managed-by": {
+                      "type": "keyword"
+                    },
+                    "app_kubernetes_io/name": {
+                      "type": "keyword"
+                    },
+                    "app_kubernetes_io/part-of": {
+                      "type": "keyword"
+                    },
+                    "app_kubernetes_io/version": {
+                      "type": "keyword"
+                    },
+                    "apps_kubernetes_io/pod-index": {
+                      "type": "keyword"
+                    },
+                    "common_k8s_elastic_co/type": {
+                      "type": "keyword"
+                    },
+                    "component": {
+                      "type": "keyword"
+                    },
+                    "controller-revision-hash": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/cluster-name": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/http-scheme": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-data": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-data_cold": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-data_content": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-data_frozen": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-data_hot": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-data_warm": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-ingest": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-master": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-ml": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-remote_cluster_client": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-transform": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/node-voting_only": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/statefulset-name": {
+                      "type": "keyword"
+                    },
+                    "elasticsearch_k8s_elastic_co/version": {
+                      "type": "keyword"
+                    },
+                    "helm_sh/chart": {
+                      "type": "keyword"
+                    },
+                    "k8s-app": {
+                      "type": "keyword"
+                    },
+                    "kibana_k8s_elastic_co/name": {
+                      "type": "keyword"
+                    },
+                    "kibana_k8s_elastic_co/version": {
+                      "type": "keyword"
+                    },
+                    "pod-template-generation": {
+                      "type": "keyword"
+                    },
+                    "pod-template-hash": {
+                      "type": "keyword"
+                    },
+                    "skaffold_dev/run-id": {
+                      "type": "keyword"
+                    },
+                    "statefulset_kubernetes_io/pod-name": {
+                      "type": "keyword"
+                    },
+                    "tier": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "master_url": {
+                  "type": "text"
+                },
+                "namespace_id": {
+                  "type": "keyword"
+                },
+                "namespace_labels": {
+                  "type": "object",
+                  "properties": {
+                    "kubernetes_io/metadata_name": {
+                      "type": "keyword"
+                    },
+                    "name": {
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "namespace_name": {
+                  "type": "keyword"
+                },
+                "pod_id": {
+                  "type": "keyword"
+                },
+                "pod_ip": {
+                  "type": "ip"
+                },
+                "pod_name": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "log": {
+              "type": "text"
+            },
+            "stream": {
+              "type": "keyword"
+            },
+            "tag": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    }
+
+  named_pipe.json: |
+    {
+      "template": {
+            "settings": {
+          "index": {
+            "codec": "best_compression"
+          }
+        },
+      "mappings": {
+        "properties": {
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "messageId": {
+                "type": "keyword"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "source": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "name": {
+            "type": "keyword"
+          },
+          "sddl": {
+            "type": "keyword"
+          },
+          "serverProcessId": {
+            "type": "keyword"
+          },
+          "serverProcessName": {
+            "type": "keyword"
+          },
+          "serverProcessPath": {
+            "type": "text"
+          }
+        }
+      }
+    }
+    }
+
+  nemesis_index_template.json: |
+    {
+      "template": {
+        "mappings": {
+          "_routing": {
+            "required": false
+          },
+          "numeric_detection": false,
+          "dynamic_date_formats": [
+            "strict_date_optional_time",
+            "yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"
+          ],
+          "dynamic": true,
+          "_source": {
+            "excludes": [],
+            "includes": [],
+            "enabled": true
+          },
+          "dynamic_templates": [],
+          "date_detection": true
+        }
+      },
+      "index_patterns": [
+        "authentication_data",
+        "authentication_data_*",
+        "extracted_hash",
+        "file_data_enriched",
+        "file_data_plaintext",
+        "file_data_sourcecode",
+        "file_information",
+        "fluentd-*",
+        "named_pipe",
+        "network_connection",
+        "process_category",
+        "registry_value",
+        "service_enriched",
+        "text_embeddings"
+      ],
+      "composed_of": [
+        "file_data_enriched",
+        "file_data_plaintext",
+        "file_data_sourcecode",
+        "file_information",
+        "process_category",
+        "authentication_data",
+        "extracted_hash",
+        "named_pipe",
+        "registry_value",
+        "fluentd",
+        "network_connection",
+        "text_embeddings",
+        "service_enriched"
+      ]
+    }
+
+  network_connection.json: |
+    {
+      "template": {
+        "settings": {
+          "index.codec": "best_compression"
+        },
+      "mappings": {
+        "properties": {
+          "localAddress": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "messageId": {
+                "type": "keyword"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "source": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "processId": {
+            "type": "long"
+          },
+          "processName": {
+            "type": "keyword"
+          },
+          "protocol": {
+            "type": "keyword"
+          },
+          "remoteAddress": {
+            "type": "keyword"
+          },
+          "service": {
+            "type": "keyword"
+          },
+          "state": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    }
+
+  pipeline_de-duplicate.json: |
+    {
+      "version": 1,
+      "processors": [
+        {
+          "fingerprint": {
+            "fields": [
+              "metadata.messageId"
+            ],
+            "target_field": "_id",
+            "method": "SHA-256",
+            "ignore_missing": true
+          }
+        },
+        {
+          "remove": {
+            "field": [
+              "jtrFormattedValue",
+              "jtrPotLine"
+            ],
+            "ignore_missing": true
+          }
+        },
+        {
+          "rename": {
+            "field": "catergory.catergory",
+            "target_field": "category",
+            "ignore_missing": true
+          }
+        },
+        {
+          "rename": {
+            "field": "category.description",
+            "target_field": "description",
+            "ignore_missing": true
+          }
+        }
+      ]
+    }
+
+  process_category.json: |
+    {
+        "template":
+        {
+            "settings":
+            {
+                "index":
+                {
+                    "codec": "best_compression"
+                }
+            },
+            "mappings":
+            {
+                "properties":
+                {
+                    "category":
+                    {
+                        "type": "keyword"
+                    },
+                    "description":
+                    {
+                        "type": "text"
+                    },
+                    "enrichmentsSuccess":
+                    {
+                        "type": "keyword"
+                    },
+                    "metadata":
+                    {
+                        "properties":
+                        {
+                            "agentId":
+                            {
+                                "type": "keyword"
+                            },
+                            "agentType":
+                            {
+                                "type": "keyword"
+                            },
+                            "automated":
+                            {
+                                "type": "boolean"
+                            },
+                            "dataType":
+                            {
+                                "type": "keyword"
+                            },
+                            "expiration":
+                            {
+                                "type": "date"
+                            },
+                            "project":
+                            {
+                                "type": "keyword"
+                            },
+                            "source":
+                            {
+                                "type": "keyword"
+                            },
+                            "timestamp":
+                            {
+                                "type": "date"
+                            }
+                        }
+                    },
+                    "origin":
+                    {
+                        "properties":
+                        {
+                            "arch":
+                            {
+                                "type": "keyword"
+                            },
+                            "name":
+                            {
+                                "type": "keyword"
+                            },
+                            "parentProcessId":
+                            {
+                                "type": "long"
+                            },
+                            "processId":
+                            {
+                                "type": "long"
+                            },
+                            "token":
+                            {
+                                "properties":
+                                {
+                                    "user":
+                                    {
+                                        "properties":
+                                        {
+                                            "name":
+                                            {
+                                                "type": "keyword"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+  registry_value.json: |
+    {
+      "template": {
+        "settings": {
+          "index.codec": "best_compression"
+        },
+        "mappings": {
+        "properties": {
+          "key": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "messageId": {
+                "type": "keyword"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "source": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "sddl": {
+            "type": "keyword"
+          },
+          "tags": {
+            "type": "keyword"
+          },
+          "value": {
+            "type": "keyword"
+          },
+          "valueKind": {
+            "type": "keyword"
+          },
+          "valueName": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+    }
+
+  service_enriched.json: |
+    {
+      "template": {
+        "settings": {
+          "index.codec": "best_compression"
+        },
+      "mappings": {
+        "properties": {
+          "category": {
+            "type": "keyword"
+          },
+          "enrichmentsSuccess": {
+            "type": "keyword"
+          },
+          "metadata": {
+            "properties": {
+              "agentId": {
+                "type": "keyword"
+              },
+              "agentType": {
+                "type": "keyword"
+              },
+              "dataType": {
+                "type": "keyword"
+              },
+              "expiration": {
+                "type": "date"
+              },
+              "messageId": {
+                "type": "keyword"
+              },
+              "project": {
+                "type": "keyword"
+              },
+              "source": {
+                "type": "keyword"
+              },
+              "timestamp": {
+                "type": "date"
+              }
+            }
+          },
+          "origin": {
+            "properties": {
+              "description": {
+                "type": "keyword"
+              },
+              "displayName": {
+                "type": "keyword"
+              },
+              "name": {
+                "type": "keyword"
+              },
+              "serviceCommand": {
+                "type": "text"
+              },
+              "serviceDll": {
+                "type": "keyword"
+              },
+              "serviceSddl": {
+                "type": "keyword"
+              },
+              "startMode": {
+                "type": "keyword"
+              },
+              "startName": {
+                "type": "keyword"
+              },
+              "state": {
+                "type": "keyword"
+              },
+              "type": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      }
+    }
+    }
+
+  text_embeddings.json: |
+    {
+        "template":
+        {
+            "settings":
+            {
+                "index":
+                {
+                    "codec": "best_compression"
+                }
+            },
+            "mappings":
+            {
+                "properties":
+                {
+                    "metadata":
+                    {
+                        "type": "object",
+                        "properties":
+                        {
+                            "chunk_size":
+                            {
+                                "type": "long"
+                            },
+                            "originating_object_id":
+                            {
+                                "type": "keyword"
+                            },
+                            "originating_object_path":
+                            {
+                                "type": "text"
+                            },
+                            "plaintext_object_id":
+                            {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "text":
+                    {
+                        "type": "text"
+                    },
+                    "vector":
+                    {
+                        "dims": 384,
+                        "similarity": "cosine",
+                        "index": true,
+                        "type": "dense_vector"
+                    }
+                }
+            }
+        }
+    }
