@@ -38,6 +38,7 @@ manifests:
     - &k8s-elastic-elasticsearch kubernetes/elastic/elasticsearch.yaml
     - &k8s-elastic-ingress kubernetes/elastic/ingress.yaml
     - &k8s-elastic-kibana kubernetes/elastic/kibana.yaml
+    - &k8s-elastic-configmap kubernetes/elastic/configmap.yaml
 
 deploy:
   kubectl: {}
@@ -49,6 +50,7 @@ profiles:
     - kubernetes/elastic/elasticsearch-dev.yaml
     - kubernetes/elastic/ingress.yaml
     - kubernetes/elastic/kibana.yaml
+    - kubernetes/elastic/configmap.yaml
 
 portForward:
   - &portForward-ingress
