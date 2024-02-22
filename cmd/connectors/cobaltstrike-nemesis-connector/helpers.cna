@@ -40,16 +40,18 @@ sub helpers::FormatDateIso8601 {
 
 sub helpers::BuildJson {
     # Takes a BeaconID/datatype/data and builds a proper JSON string
-    local('$1 $2 $3 $4 $5 $BID $Datatype $TimeStamp $Data %JsonData $IndentSpaces $JsonString');
+    local('$1 $2 $3 $4 $5 $6 $7 $BID $Datatype $TimeStamp $Operation $Source $Data %JsonData $IndentSpaces $JsonString');
 
     $BID = $1;
     $Datatype = $2;
     $Data = $3;
     $TimeStamp = $4;
-    $IndentSpaces = $5;
+    $Operation = $5;
+    $Source = $6;
+    $IndentSpaces = $7;
 
     %JsonData = %(
-        metadata => helpers::GetMetadata($BID, $Datatype, $TimeStamp),
+        metadata => helpers::GetMetadata($BID, $Datatype, $TimeStamp, $Operation, $Source),
         data => $Data
     );
 
@@ -65,7 +67,7 @@ sub helpers::BuildJson {
 
 sub helpers::GetMetadata {
     # Gets a metadata hashtable for the current beacon ID
-    local('$1 $2 $3 $BID $Expiration $Datatype $TimeStamp');
+    local('$1 $2 $3 $4 $5 $BID $Expiration $Datatype $TimeStamp $Operation $Source %Metadata');
 
     $BID = $1;
     $Datatype = $2;
@@ -80,16 +82,28 @@ sub helpers::GetMetadata {
 
     $Expiration = helpers::GetExpirationTime($TimeStamp);
 
-    return %(
+    $Operation = $4;
+    $Source = $5;
+
+    %Metadata = %(
         agent_id => $BID,
         agent_type => "beacon",
         automated => "true",
         data_type => $Datatype,
         expiration => helpers::FormatDateIso8601($Expiration),
-        # source => beacon_info($BID, "computer"), # only have the netbios name here unfortunately
         project => %nemesis::Settings['NemesisProject'],
         timestamp => helpers::FormatDateIso8601($TimeStamp)
     );
+
+    # optional fields to add to metadata
+    if ($Operation) {
+        add(%Metadata, operation => $Operation);
+    }
+    if ($Source) {
+        add(%Metadata, source => $Source);
+    }
+
+    return %Metadata;
 }
 
 sub helpers::GetExpirationTime {

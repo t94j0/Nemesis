@@ -230,12 +230,14 @@ sub http::getObjectID {
 sub http::PostData {
     # posts data to the appropriate API endpoint, returning a unique UUID message ID
 
-    local('$1 $2 $3 $4 $BID $Datatype $auth_header $Data $TimeStamp $JsonData $url $urlobj $con $wr $responseCode $in $inputLine');
+    local('$1 $2 $3 $4 $5 $6 $BID $Datatype $auth_header $Data $TimeStamp $Operation $Source $JsonData $url $urlobj $con $wr $responseCode $in $inputLine');
 
     $BID = $1;
     $Datatype = $2;
     $Data = $3;
     $TimeStamp = $4;
+    $Operation = $5;
+    $Source = $6;
 
     $url = %nemesis::Settings['NemesisApiUrl'] . 'data';
     $urlobj = [new URL: $url];
@@ -243,11 +245,11 @@ sub http::PostData {
     $con = [$urlobj openConnection];
 
     if(%nemesis::Settings['DebugJson']) {
-        $JsonData = helpers::BuildJson($BID, $Datatype, $Data, $TimeStamp);
+        $JsonData = helpers::BuildJson($BID, $Datatype, $Data, $TimeStamp, $Operation, $Source);
         logger::WriteVerbose("PostData URL: " . $url);
         logger::WriteVerbose($Datatype . " JSON: " . $JsonData);
     } else {
-        $JsonData = helpers::BuildJson($BID, $Datatype, $Data, $TimeStamp);
+        $JsonData = helpers::BuildJson($BID, $Datatype, $Data, $TimeStamp, $Operation, $Source);
     }
 
 

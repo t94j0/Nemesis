@@ -11,8 +11,8 @@ beacon_command_register(
     "nps",
     "Shows, colors, and describes a list of processes using Nemesis (alternative process listing)",
     "Use:\n" .
-    "    nps [-s <sort>] [regex]\n" . 
-    "    nps -d [regex]\n" . 
+    "    nps [-s <sort>] [regex]\n" .
+    "    nps -d [regex]\n" .
     "Arguments:\n" .
     "   -s <sort>        Sort by a field. Possible sort fields are name, ppid, pid, arch, user, and session.\n" .
     "   regex            Filter results using a regex\n" .
@@ -30,7 +30,7 @@ alias nps {
     local('$term $sort $1 $2 $3 $4 $describe');
     $sort = "pid";
     $describe = true;
-    
+
     if($2) {
         if($2 eq "-s") {
             if($3) {
@@ -64,7 +64,7 @@ alias nps {
             $sortField => $sort,
             $describe => $describe
         )
-    );    
+    );
 }
 
 
@@ -73,7 +73,7 @@ sub ps::process_list_callback {
     local('$description $category $MessageID $retries $num_results $results');
     local('$out $temp $name $ppid $pid $arch $user $session @Processes');
     local('$result $parentProcessId $parentProcessId $parentProcessId $color $parentProcessId $processId $Underline $outputLine $legend');
-    
+
     $BID = $1;
     $binfo = binfo($BID);
     $outputText = $2;
@@ -117,7 +117,10 @@ sub ps::process_list_callback {
     }
 
     # Step 2 - post the process data to Nemesis and extract the message ID
-    $MessageID = http::PostData($BID, "process", @Processes);
+    # We can't list processes remotely natively in beacon, so no $Source here
+    #   http::PostData($BID, $Datatype, $Data, $TimeStamp, $Operation, $Source)
+    #     '' for timestamp defaults to the current time
+    $MessageID = http::PostData($BID, "process", @Processes, "", "list");
     logger::WriteVerbose("ps::process_list_callback() MessageID: ". $MessageID);
 
     if($describe) {
@@ -155,10 +158,10 @@ sub ps::process_list_callback {
             }
             $retries = $retries - 1;
         }
-        
+
         if($results) {
             foreach $result ($results["hits"]["hits"]) {
-                $result = $result["_source"];            
+                $result = $result["_source"];
                 $parentProcessId = $result["parentProcessId"];
                 $processId = $result["processId"];
                 $name = $result["name"];
@@ -167,7 +170,7 @@ sub ps::process_list_callback {
                 $description = $result["category"]["description"];
                 $session = $result["token"]["user"]["session"];
                 $user = $result["token"]["user"]["name"];
-                
+
                 if($category eq "Security") {
                     $color = "\c4";				# highlight security products processes in RED.
                 }
@@ -197,7 +200,7 @@ sub ps::process_list_callback {
 
                 $out .= "$outputLine \n";
             }
-                
+
             if($describe) {
                 $windowSizeStr = "                                                                                                                                                                ";
             }

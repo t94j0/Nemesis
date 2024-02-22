@@ -51,7 +51,7 @@ global('%nemesis::Settings %EventHandlerMap');
 
 # 1/0, defines debug JSON output
 #   overwritten by the NEMESIS_DEBUG_JSON environment variable if present
-%nemesis::Settings['DebugJson'] = 0;
+%nemesis::Settings['DebugJson'] = 1;
 
 # Underline minute threshold for beacon process listings
 %nemesis::Settings['BeaconUnderlineThreshold'] = 120;
@@ -413,7 +413,7 @@ sub Handle_beacon_output_ls {
     #    D       0       09/15/2018 00:42:33     All Users
     #    D       0       05/22/2019 02:42:37     Default
     # 2: 1560844546441
-    local('$1 @Args $BID @Lines $Line @Parts $PathBase $Size $Type $ObjectType $Modified $Name @Files %File $MessageID $Date');
+    local('$1 @Args $BID @Lines $Line @Parts $PathBase $PathOffset $Source $Size @parts $Type $PathOffset @NamedPipes $ObjectType $Modified $Name @Files %File $MessageID $Date');
 
     @Args = $1;
     $BID = @Args[0];
@@ -428,42 +428,75 @@ sub Handle_beacon_output_ls {
     @Lines = split('\n', @Args[1]);
     $PathBase = replace(left(@Lines[0], strlen(@Lines[0]) - 1), "\\\\", "/");
 
-    @Files = @();
+    if ($PathBase ismatch '^//./pipe/+') {
+        # handle named pipes
 
-    foreach $Line (sublist(@Lines, 1)) {
-        @Parts = split('\t', $Line);
-
-        $Type = @Parts[0];
-        $Size = @Parts[1];
-
-        # date format: 02/01/2023 10:19:40
-        $Date = parseDate('MM/dd/yyyy kk:mm:ss', @Parts[2]);
-        $Modified = formatDate($Date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-        $Name = @Parts[3];
-        $ObjectType = "other";
-
-        if($Type eq 'F') {
-            $ObjectType = "file";
-        }
-        else if($Type eq 'D') {
-            $ObjectType = "folder";
+        @NamedPipes = @();
+        foreach $Line (sublist(@Lines, 1)) {
+            # can only get the name accurately from CS, unfortunately
+            @Parts = split('\t', $Line);
+            add(@NamedPipes, %(name => @Parts[3]));
         }
 
-        if (($Name ne ".") && ($Name ne "..")) {
-            %File = %(
-                path => $PathBase . $Name;
-                type => $ObjectType;
-                size => $Size;
-                modification_time => $Modified;
-            );
-
-            add(@Files, %File);
-        }
+        # http::PostData($BID, $Datatype, $Data, $TimeStamp, $Operation, $Source)
+        #   '' for timestamp defaults to the current time
+        $MessageID = http::PostData($BID, "named_pipe", @NamedPipes, '', "list");
+        logger::WriteVerbose("[Handle_beacon_output_ls NamedPipes] MessageID: ". $MessageID);
     }
+    else {
+        $Source = "";
 
-    $MessageID = http::PostData($BID, "file_information", @Files);
-    logger::WriteVerbose("[Handle_beacon_output_ls] MessageID: ". $MessageID);
+        # handle UNC paths
+        if ($PathBase ismatch '^//.+') {
+            @parts = split("/", $PathBase);
+            $Source = @parts[2];
+            $PathOffset = indexOf($PathBase, $Source) + strlen($Source) + 1;
+            $PathBase = substr($PathBase, $PathOffset);
+            # correct the remote C$/D$/etc. path to a "local" path for that remote source system
+            if (charAt($PathBase, 1) eq '$') {
+                $PathBase = replaceAt($PathBase, ":", 1);
+            }
+        }
+
+        @Files = @();
+
+        foreach $Line (sublist(@Lines, 1)) {
+            @Parts = split('\t', $Line);
+
+            $Type = @Parts[0];
+            $Size = @Parts[1];
+
+            # date format: 02/01/2023 10:19:40
+            $Date = parseDate('MM/dd/yyyy kk:mm:ss', @Parts[2]);
+            $Modified = formatDate($Date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+            $Name = @Parts[3];
+            $ObjectType = "other";
+
+            if($Type eq 'F') {
+                $ObjectType = "file";
+            }
+            else if($Type eq 'D') {
+                $ObjectType = "folder";
+            }
+
+            if (($Name ne ".") && ($Name ne "..")) {
+                %File = %(
+                    path => $PathBase . $Name;
+                    type => $ObjectType;
+                    size => $Size;
+                    modification_time => $Modified;
+                );
+
+                add(@Files, %File);
+            }
+        }
+
+        # http::PostData($BID, $Datatype, $Data, $TimeStamp, $Operation, $Source)
+        #   '' for timestamp defaults to the current time
+        $MessageID = http::PostData($BID, "file_information", @Files, '', "list", $Source);
+        logger::WriteVerbose("[Handle_beacon_output_ls] MessageID: ". $MessageID);
+    }
 }
 
 
@@ -517,7 +550,10 @@ sub Handle_beacon_output_ps {
         add(@Processes, %Process);
     }
 
-    $MessageID = http::PostData($BID, "process", @Processes);
+    # We can't list processes remotely natively in beacon, so no $Source here
+    #   http::PostData($BID, $Datatype, $Data, $TimeStamp, $Operation, $Source)
+    #       '' for timestamp defaults to the current time
+    $MessageID = http::PostData($BID, "process", @Processes, "", "list");
     logger::WriteVerbose("[Handle_beacon_output_ps] MessageID: ". $MessageID);
 }
 
@@ -615,7 +651,7 @@ sub Handle_beacon_output {
 
 
 sub Handle_beacon_initial {
-    local('$1 %Args $BID $Hostname $OS $Arch $ProcessName $ProcessId $ProcessUsername @AgentIds $Ver $Build $Description %HostJsonData $HostJsonString %HostRawData $HostMessageID %AgentJsonData $AgentJsonString %AgentRawData $AgentMessageID');
+    local('$1 %Args $BID $Hostname $OS $Arch $ProcessName $ProcessId $ProcessUsername @AgentIds $Ver $Host $Internal $External $Computer @IPs $Build $Description %HostJsonData $HostJsonString %HostRawData $HostMessageID %HostInfoData %AgentJsonData $AgentJsonString %AgentRawData $AgentMessageID $HostInfoMessageID');
 
     # don't process if things aren't initialized correctly yet
     if(!$NemesisReady) {return $null;}
@@ -655,7 +691,8 @@ sub Handle_beacon_initial {
     );
 
     $HostMessageID = http::PostData($BID, "raw_data", @(%HostRawData));
-    logger::WriteVerbose("[Handle_beacon_initial] Host MessageID: ". $HostMessageID);
+    logger::WriteVerbose("[Handle_beacon_initial] host_data_json MessageID: ". $HostMessageID);
+
 
     $Arch = lc(beacon_info($BID, "arch"));
     $ProcessName = beacon_info($BID, "process");
@@ -680,7 +717,29 @@ sub Handle_beacon_initial {
     );
 
     $AgentMessageID = http::PostData($BID, "raw_data", @(%AgentRawData));
-    logger::WriteVerbose("[Handle_beacon_initial] Agent MessageID: ". $HostMessageID);
+    logger::WriteVerbose("[Handle_beacon_initial] agent_data_json MessageID: ". $HostMessageID);
+
+
+    # info for the host_information message
+    $Internal = beacon_info($BID, "internal");
+    $External = beacon_info($BID, "external");
+    $Host = beacon_info($BID, "host");
+    $Computer = beacon_info($BID, "computer");
+
+    # get a unique set of IPs
+    @IPs = @($Internal);
+    if (!($External in @IPs) && ($External ismatch '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$')) {
+        add(@IPs, $External);
+    }
+    if (!($Host in @IPs) && ($Host ismatch '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$')) {
+        add(@IPs, $Host);
+    }
+    %HostInfoData = %(
+        ip_addresses => @IPs;
+        short_name => $Computer;
+    );
+    $HostInfoMessageID = http::PostData($BID, "host_information", @(%HostInfoData));
+    logger::WriteVerbose("[Handle_beacon_initial] host_information MessageID: ". $HostInfoMessageID);
 }
 
 #################################################################
