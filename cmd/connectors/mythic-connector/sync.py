@@ -6,6 +6,7 @@ import logging
 import ntpath
 import os
 import sys
+import ipaddress
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -308,6 +309,8 @@ async def handle_file(mythic_instance: mythic_classes.Mythic) -> None:
             task {
                 callback {
                     agent_callback_id
+                    host
+                    ip
                     operation {
                         name
                     }
@@ -386,13 +389,18 @@ async def handle_file(mythic_instance: mythic_classes.Mythic) -> None:
                     metadata["automated"] = True
                     metadata["data_type"] = "file_data"
                     metadata["expiration"] = convert_timestamp(file_meta["timestamp"], EXPIRATION_DAYS)
-                    # metadata["source"] = file_meta["host"]
                     metadata["project"] = file_meta["task"]["callback"]["operation"]["name"]
                     metadata["timestamp"] = convert_timestamp(file_meta["timestamp"])
+                    # specify `source` if this is a remote download
+                    if file_meta["host"].lower() != file_meta["task"]["callback"]["host"].lower():
+                        metadata["source"] = file_meta["host"]
 
                     file_data = {}
+
                     file_data["path"] = base64.b64decode(file_meta["full_remote_path_text"]).decode("utf-8").replace("\\", "/")
-                    # filename_text = base64.b64decode(file_meta["filename_text"]).decode("utf-8")
+                    if len(file_data["path"]) > 2 and file_data["path"][1] == '$':
+                        file_data["path"] = file_data["path"].replace('$', ':', 1)
+
                     file_data["size"] = file_size
                     file_data["object_id"] = nemesis_file_id
 
@@ -423,8 +431,6 @@ async def handle_file(mythic_instance: mythic_classes.Mythic) -> None:
 
                         # this is any metadata that we're doing to display as JSON for the "file_metadata" tag
                         file_metadata_display = {}
-
-                        # print(f"file_metadata: {file_metadata}")
 
                         if "size" in file_metadata and file_metadata["size"]:
                             file_metadata_display["size"] = file_metadata["size"]
@@ -500,10 +506,9 @@ async def handle_file(mythic_instance: mythic_classes.Mythic) -> None:
                             if "noseyparker" not in existing_tags:
                                 await add_mythic_tag(mythic_instance, "noseyparker", filemeta_id=file_id, task_id=task_id, url=dashboard_file_link, data=data)
 
-            except Exception:
+            except Exception as e:
                 mythic_sync_log.exception(
-                    "Encountered an exception! Data returned by Mythic: %s",
-                    data,
+                    f"Encountered an exception: {e} . Data returned by Mythic: {data}"
                 )
                 continue
 
@@ -536,6 +541,8 @@ async def handle_ls_responses(mythic_instance: mythic_classes.Mythic) -> None:
             }
             callback {
                 agent_callback_id
+                host
+                ip
                 operation {
                     name
                 }
@@ -544,7 +551,6 @@ async def handle_ls_responses(mythic_instance: mythic_classes.Mythic) -> None:
                         name
                     }
                 }
-                host
             }
         }
     }
@@ -573,7 +579,7 @@ async def handle_ls_responses(mythic_instance: mythic_classes.Mythic) -> None:
                     callback_id = task["callback"]["agent_callback_id"]
 
                     # build the metadata entry on first encounter of this agent ID
-                    if callback_id not in all_data:
+                    if mythic_id not in all_data:
                         metadata = {}
                         timestamp = task["responses"][0]["timestamp"]
                         metadata["agent_id"] = callback_id
@@ -581,15 +587,16 @@ async def handle_ls_responses(mythic_instance: mythic_classes.Mythic) -> None:
                         metadata["automated"] = True
                         metadata["data_type"] = "file_information"
                         metadata["expiration"] = convert_timestamp(timestamp, EXPIRATION_DAYS)
-                        metadata["source"] = task["callback"]["host"]
+                        metadata["operation"] = "list"
                         metadata["project"] = task["callback"]["operation"]["name"]
                         metadata["timestamp"] = convert_timestamp(timestamp)
 
-                        all_data[callback_id] = {}
-                        all_data[callback_id]["metadata"] = metadata
-                        all_data[callback_id]["data"] = list()
+                        all_data[mythic_id] = {}
+                        all_data[mythic_id]["metadata"] = metadata
+                        all_data[mythic_id]["data"] = list()
 
                     # parse Merlin's ls response
+
                     ls_response = task["responses"][0]["response_escape"]
                     ls_response_lines = ls_response.split("\n")
 
@@ -598,24 +605,37 @@ async def handle_ls_responses(mythic_instance: mythic_classes.Mythic) -> None:
                             folder = line[23:].replace("\\\\", "/").strip()
                             if not folder.endswith("/"):
                                 folder = f"{folder}/"
+                            if folder == "//./pipe/":
+                                metadata["data_type"] = "named_pipe"
+                            elif folder.startswith("//"):
+                                # remote UNC listing
+                                parts = folder.split("/")
+                                all_data[mythic_id]["metadata"]["source"] = parts[2]
+                                folder = "/".join(parts[3:])
+                                if len(folder) > 2 and folder[1] == '$':
+                                    folder = folder.replace('$', ':', 1)
 
                     for line in ls_response_lines:
+                        print(line)
                         line_parts = line.split("\t")
                         if len(line_parts) == 4:
                             file_data = {}
 
-                            if line_parts[0].startswith("d"):
-                                file_data["type"] = "folder"
-                                file_data["size"] = 0
+                            if metadata["data_type"] == "named_pipe":
+                                file_data = {"name": line_parts[3]}
                             else:
-                                file_data["type"] = "file"
-                                file_data["size"] = line_parts[2]
+                                if line_parts[0].startswith("d"):
+                                    file_data["type"] = "folder"
+                                    file_data["size"] = 0
+                                else:
+                                    file_data["type"] = "file"
+                                    file_data["size"] = line_parts[2]
 
-                            file_data["modification_time"] = datetime.strptime(line_parts[1], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S.000Z")
-                            file_name = line_parts[3]
-                            file_data["path"] = f"{folder}{file_name}"
+                                file_data["modification_time"] = datetime.strptime(line_parts[1], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                                file_name = line_parts[3]
+                                file_data["path"] = f"{folder}{file_name}"
 
-                            all_data[callback_id]["data"].append(file_data)
+                            all_data[mythic_id]["data"].append(file_data)
 
                     # mark this ls response as seen
                     rconn.mset({redis_key: 1})
@@ -625,7 +645,7 @@ async def handle_ls_responses(mythic_instance: mythic_classes.Mythic) -> None:
                     if mythic_id > last_ls_id:
                         rconn.mset({"last_ls_id": mythic_id})
 
-        # for each unique agent ID, issue one request with all batched file browser information
+        # for each unique task ID, issue one request with all batched file browser information
         #   but using the same metadata entry
         for key in all_data:
             resp = nemesis_post_data(all_data[key])
@@ -663,6 +683,8 @@ async def handle_filebrowser(mythic_instance: mythic_classes.Mythic) -> None:
             task {
                 callback {
                     agent_callback_id
+                    host
+                    ip
                     operation {
                         name
                     }
@@ -696,24 +718,30 @@ async def handle_filebrowser(mythic_instance: mythic_classes.Mythic) -> None:
             if not redis_entry_id:
                 callback_id = file["task"]["callback"]["agent_callback_id"]
 
-                # build the metadata entry on first encounter of this agent ID
-                if callback_id not in all_data:
+                # build the metadata entry on first encounter of this task ID
+                if mythic_id not in all_data:
                     metadata = {}
                     metadata["agent_id"] = callback_id
                     metadata["agent_type"] = "mythic"
                     metadata["automated"] = True
                     metadata["data_type"] = "file_information"
                     metadata["expiration"] = convert_timestamp(file["timestamp"], EXPIRATION_DAYS)
-                    metadata["source"] = file["host"]
+                    metadata["operation"] = "list"
                     metadata["project"] = file["task"]["callback"]["operation"]["name"]
                     metadata["timestamp"] = convert_timestamp(file["timestamp"])
 
-                    all_data[callback_id] = {}
-                    all_data[callback_id]["metadata"] = metadata
-                    all_data[callback_id]["data"] = list()
+                    # specify `source` if this is a remote listing
+                    if file["host"].lower() != file["task"]["callback"]["host"].lower():
+                        metadata["source"] = file["host"]
+
+                    all_data[mythic_id] = {}
+                    all_data[mythic_id]["metadata"] = metadata
+                    all_data[mythic_id]["data"] = list()
 
                 file_data = {}
-                file_data["path"] = file["full_path_text"].replace("\\", "/")
+                file_data["path"]  = file["full_path_text"].replace("\\", "/")
+                if len(file_data["path"] ) > 2 and file_data["path"] [1] == '$':
+                    file_data["path"] = file_data["path"] .replace('$', ':', 1)
 
                 if "metadata" in file and "size" in file["metadata"]:
                     file_data["size"] = file["metadata"]["size"]
@@ -749,7 +777,7 @@ async def handle_filebrowser(mythic_instance: mythic_classes.Mythic) -> None:
                     except Exception as e:
                         pass
 
-                all_data[callback_id]["data"].append(file_data)
+                all_data[mythic_id]["data"].append(file_data)
 
                 # mark this file browser entry as seen
                 # TODO: does this need to be after the nemesis_post_data call?
@@ -761,7 +789,7 @@ async def handle_filebrowser(mythic_instance: mythic_classes.Mythic) -> None:
                 if mythic_id > last_filebrowser_id:
                     rconn.mset({"last_filebrowser_id": mythic_id})
 
-        # for each unique agent ID, issue one request with all batched file browser information
+        # for each unique task ID, issue one request with all batched file browser information
         #   but using the same metadata entry
         for key in all_data:
             resp = nemesis_post_data(all_data[key])
@@ -797,6 +825,8 @@ async def handle_process(mythic_instance: mythic_classes.Mythic, chunk_size: int
             task {
                 callback {
                     agent_callback_id
+                    host
+                    ip
                     operation {
                         name
                     }
@@ -830,20 +860,20 @@ async def handle_process(mythic_instance: mythic_classes.Mythic, chunk_size: int
                 callback_id = process["task"]["callback"]["agent_callback_id"]
 
                 # build the metadata entry on first encounter of this agent ID
-                if callback_id not in all_data:
+                if mythic_id not in all_data:
                     metadata = {}
                     metadata["agent_id"] = callback_id
                     metadata["agent_type"] = "mythic"
                     metadata["automated"] = True
                     metadata["data_type"] = "process"
                     metadata["expiration"] = convert_timestamp(process["timestamp"], EXPIRATION_DAYS)
-                    metadata["source"] = process["host"]
+                    metadata["operation"] = "list"
                     metadata["project"] = process["task"]["callback"]["operation"]["name"]
                     metadata["timestamp"] = convert_timestamp(process["timestamp"])
 
-                    all_data[callback_id] = {}
-                    all_data[callback_id]["metadata"] = metadata
-                    all_data[callback_id]["data"] = list()
+                    all_data[mythic_id] = {}
+                    all_data[mythic_id]["metadata"] = metadata
+                    all_data[mythic_id]["data"] = list()
 
                 # integrity levels:
                 #   0 - unknown
@@ -869,7 +899,7 @@ async def handle_process(mythic_instance: mythic_classes.Mythic, chunk_size: int
 
                 process_data["token"] = {"user": {"name": process["metadata"]["user"]}}
 
-                all_data[callback_id]["data"].append(process_data)
+                all_data[mythic_id]["data"].append(process_data)
 
                 if callback_id not in mythic_process_lookup_table:
                     mythic_process_lookup_table[callback_id] = {}
@@ -890,7 +920,7 @@ async def handle_process(mythic_instance: mythic_classes.Mythic, chunk_size: int
                 if mythic_id > last_process_id:
                     rconn.mset({"last_process_id": mythic_id})
 
-        # for each unique agent ID, issue one request with all batched processes
+        # for each unique task ID, issue one request with all batched processes
         #   but using the same metadata entry
         for key in all_data:
             resp = nemesis_post_data(all_data[key])
@@ -929,6 +959,86 @@ async def handle_process(mythic_instance: mythic_classes.Mythic, chunk_size: int
                             tag_calls.append(add_mythic_tag(mythic_instance, category, mythictree_id=mythictree_id, data=data))
 
                     await asyncio.gather(*tag_calls)
+
+
+async def handle_callback(mythic_instance: mythic_classes.Mythic) -> None:
+    """
+    Start a subscription for Mythic callbacks to handle the initial host_information
+    message that needs to be sent.
+
+    **Parameters**
+
+    ``mythic_instance``
+        The Mythic instance to be used to query the Mythic database
+    """
+
+    try:
+        start_id = rconn.get("last_callback_id")
+    except:
+        rconn.mset({"last_callback_id": 0})
+        start_id = 0
+
+    nemesis_callback_subscription = """
+    subscription NemesisCallbackSubscription {
+        callback_stream(batch_size: 10, cursor: {initial_value: {id: %s}}) {
+            id
+            agent_callback_id
+            host
+            ip
+            operation {
+                name
+            }
+            timestamp
+        }
+    }
+    """ % (
+        start_id
+    )
+
+    mythic_sync_log.info(f"Starting subscription for callback information, start_id: {start_id}")
+    async for data in mythic.subscribe_custom_query(mythic=mythic_instance, query=nemesis_callback_subscription):
+
+        for callback in data["callback_stream"]:
+            mythic_id = callback["id"]
+            redis_key = f"callback{mythic_id}"
+            try:
+                redis_entry_id = rconn.get(redis_key)
+            except:
+                redis_entry_id = None
+
+            # if this key is _not_ already processed
+            if not redis_entry_id:
+
+                metadata = {}
+                metadata["agent_id"] = callback["agent_callback_id"]
+                metadata["agent_type"] = "mythic"
+                metadata["automated"] = True
+                metadata["data_type"] = "host_information"
+                metadata["expiration"] = convert_timestamp(callback["timestamp"], EXPIRATION_DAYS)
+                metadata["project"] = callback["operation"]["name"]
+                metadata["timestamp"] = convert_timestamp(callback["timestamp"])
+
+                ips = []
+                try:
+                    for ip_str in json.loads(callback["ip"]):
+                        ip_str = ip_str.removesuffix("/24")
+                        try:
+                            ip = ipaddress.ip_address(ip_str)
+                            if not (ip.is_multicast or ip.is_reserved or ip.is_loopback or ip.is_link_local):
+                                ips.append(ip_str)
+                        except:
+                            pass
+                except:
+                    pass
+
+                data = {
+                    'ip_addresses': ips,
+                    'short_name' : callback["host"]
+                }
+
+                resp = nemesis_post_data({"metadata": metadata, "data": [data]})
+                if resp:
+                    rconn.mset({redis_key: 1})
 
 
 async def add_mythic_tag(mythic_instance: mythic_classes.Mythic, tag_name: str, source: str = "Nemesis", filemeta_id: int = None, mythictree_id: int = None, task_id: int = None, url: str = "", data: str = ""):
@@ -1178,7 +1288,8 @@ async def scripting():
                 handle_file(mythic_instance=mythic_instance),
                 handle_process(mythic_instance=mythic_instance),
                 handle_filebrowser(mythic_instance=mythic_instance),
-                handle_ls_responses(mythic_instance=mythic_instance)
+                handle_ls_responses(mythic_instance=mythic_instance),
+                handle_callback(mythic_instance=mythic_instance)
             )
         except Exception:
             mythic_sync_log.exception("Encountered an exception while subscribing to tasks and responses, restarting...")

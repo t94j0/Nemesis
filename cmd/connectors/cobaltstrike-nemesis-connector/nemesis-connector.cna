@@ -51,7 +51,7 @@ global('%nemesis::Settings %EventHandlerMap');
 
 # 1/0, defines debug JSON output
 #   overwritten by the NEMESIS_DEBUG_JSON environment variable if present
-%nemesis::Settings['DebugJson'] = 1;
+%nemesis::Settings['DebugJson'] = 0;
 
 # Underline minute threshold for beacon process listings
 %nemesis::Settings['BeaconUnderlineThreshold'] = 120;
