@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "llm"
+version = "0.1.0"
+description = "LLM enrichment endpoint"
+authors = ["SpecterOps <specterops.io>"]
+packages = [{ include = "llm" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11.2,<3.13"
+typing-extensions = "^4.5.0"
+fastapi = "^0.109.2"
+uvicorn = { extras = ["standard"], version = "^0.22.0" }
+prometheus-async  = { extras = ["aiohttp"], version = "^22.2.0"}
+structlog = "^23.1.0"
+aiohttp = "^3.9.3"
+rigging = "^0.1.7"
+pydantic-settings = "^2.2.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.poetry.group.dev.dependencies]
+debugpy = "^1.6.7"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+import_heading_stdlib = "Standard Libraries"
+import_heading_firstparty = "Nemesis Libraries"
+import_heading_thirdparty = "3rd Party Libraries"
+profile = "black"
+extra_standard_library = "asgiref"
+known_first_party = "nemesis"
+src_paths = ["isort", "test"]
+line_length = 90
+use_parentheses = true
+multi_line_output = 3
+include_trailing_comma = true
+ensure_newline_before_comments = true
+sections = [
+    "FUTURE",
+    "STDLIB",
+    "DJANGO",
+    "THIRDPARTY",
+    "FIRSTPARTY",
+    "LOCALFOLDER",
+]
+
+# [tool.pyright]
+# Using pyrightconfig.json instead since pyproject.toml has 2nd class
+# support in VS code: https://github.com/microsoft/pyright/issues/694#issuecomment-823778235
+
+[tool.black]
+line-length = 240

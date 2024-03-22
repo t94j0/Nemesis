@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm
+  labels:
+    app: llm
+    component: enrichment-pipeline
+spec:
+  type: NodePort
+  ports:
+    - name: "9900"
+      port: 9900
+      targetPort: 9900
+      nodePort: {{ .Values.llm.nodePort }}
+  selector:
+    app: llm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm
+  labels:
+    app: llm
+    component: enrichment-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: llm
+        component: enrichment-pipeline
+    spec:
+      containers:
+        - env:
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: operation-config
+                  key: log-level
+            - name: DATA_DOWNLOAD_DIR
+              value: "/tmp"
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: operation-config
+                  key: environment
+            - name: PROMETHEUS_DISABLE_CREATED_SERIES
+              value: "True"
+            - name: PROMETHEUS_PORT
+              value: "9801"
+
+          image: {{ .Values.llm.image.repository }}:{{ .Values.llm.image.tag }}
+          imagePullPolicy: {{ .Values.llm.image.pullPolicy }}
+          name: nemesis-llm
+          ports:
+            - containerPort: 9900
+              name: llm-http
+          resources: {{ toYaml .Values.llm.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: llm-http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 10
+
+      restartPolicy: Always

@@ -1,0 +1,4 @@
+[flake8]
+ignore = E231, E241
+max-line-length = 240
+count = true
