@@ -5,8 +5,14 @@ on:
     branches:
       - main  # Adjust this if your default branch is named differently
 
+permissions:
+    contents: write
+    pages: write
+    id-token: write
+
 jobs:
   convert-and-deploy:
+
     runs-on: ubuntu-latest
     environment:
       name: github-pages  # Name of the GitHub Pages environment
@@ -34,4 +40,3 @@ jobs:
 
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v4
-      id: deploy
