@@ -281,5 +281,7 @@ hasura:
     annotations:
   resources: {}
 
+# kubernetes-sigs/metrics-server
 metricsServer:
+  # Enable the metrics-server Deployment
   enabled: false
