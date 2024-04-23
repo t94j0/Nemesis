@@ -13,6 +13,9 @@ theme:
   logo: images/logo.png
   favicon: images/logo.png
 
+  features:
+    - navigation.sections
+
   icon:
     repo: fontawesome/brands/github
 
