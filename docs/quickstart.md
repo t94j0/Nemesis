@@ -3,7 +3,9 @@
 This guide will help you quickly launch the Nemesis platform using k3s and Helm on Debian 11. This guide will start a Nemesis server running locally and accessible through "https://127.0.0.1". If this does not fit your installation need, see the full [setup guide](installation/setup.md).
 
 ### Prerequisites
+
 Ensure your machine meets the following requirements:
+
 - **OS**: Debian 11 LTS
 - **Processors**: 4 cores (3 can work with adjustments)
 - **Memory**: 16 GB RAM (minimum of 10 GB for reduced performance)
@@ -100,5 +102,6 @@ https://127.0.0.1
 ```
 
 Enter the basic authentication credentials you retrieved earlier to access the Nemesis dashboard. Use the following credentials:
+
 - **Username**: The value stored in `${BASIC_AUTH_USER}`
 - **Password**: The value stored in `${BASIC_AUTH_PASSWORD}`
