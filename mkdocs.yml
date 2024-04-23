@@ -14,8 +14,8 @@ nav:
     - Setup: installation/setup.md
     - Requirements: installation/requirements.md
     - Unsupported Platforms:
-        - installation/requirements_docker_desktop.md
-        - installation/requirements_minikube.md
+        - Docker Desktop: installation/requirements_docker_desktop.md
+        - Minikube: installation/requirements_minikube.md
     - Quickstart Chart: installation/quickstart_chart.md
     - Nemesis Chart: installation/nemesis_chart.md
   - Usage:
