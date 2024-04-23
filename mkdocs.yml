@@ -4,6 +4,10 @@ repo_url: https://github.com/SpecterOps/Nemesis
 repo_name: SpecterOps/Nemesis
 edit_uri: edit/main/docs/
 
+plugins:
+  - search
+
+
 exclude_docs: |
   /requirements.txt
 
