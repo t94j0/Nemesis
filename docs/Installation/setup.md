@@ -1,22 +1,22 @@
 # Nemesis Installation and Setup
-1. Ensure the [requisite software/hardware is installed](installation/requirements.md).
+1. Ensure the [requisite software/hardware is installed](requirements.md).
 
-2. Run the [`quickstart` Helm chart](installation/quickstart_chart.md) to configure Nemesis's services and secrets.
+2. Run the [`quickstart` Helm chart](quickstart_chart.md) to configure Nemesis's services and secrets.
 
-3. Deploy Nemesis's services by [using its Helm chart](installation/nemesis_chart.md).
+3. Deploy Nemesis's services by [using its Helm chart](nemesis_chart.md).
 
-4. [Setup and access Nemesis](access_nemesis.md).
+4. [Setup and access Nemesis](../access_nemesis.md).
 
 5. [Ingest data into Nemesis.](#data-ingestion)
 
-If you run into any issues, please see [troubleshooting.md](troubleshooting.md) for common errors/issues.
+If you run into any issues, please see [troubleshooting.md](../troubleshooting.md) for common errors/issues.
 
 # Data Ingestion
 Once Nemesis is running, data first needs to be ingested into the platform. Ingestion into Nemesis can occur in muliple ways, including
 * [Auto-ingesting data from C2 platorms.](#nemesis-c2-connector-setup)
 * Manually uploading files on the "File Upload" page in the Nemesis's Dashboard UI.
-* Using the [submit_to_nemesis](submit_to_nemesis.md) CLI tool to submit files.
-* Writing custom tools to interact with [Nemesis's API](new_connector.md).
+* Using the [submit_to_nemesis](../submit_to_nemesis.md) CLI tool to submit files.
+* Writing custom tools to interact with [Nemesis's API](../new_connector.md).
 
 ## Nemesis C2 Connector Setup
 Nemesis includes connectors for various C2 platorms. The connectors hook into the C2 platforms and transfer data automatically into Nemesis. The `./cmd/connectors/` folder contains the following C2 connectors:
@@ -30,7 +30,7 @@ Nemesis includes connectors for various C2 platorms. The connectors hook into th
 
 ***Note: not all connectors have the same level of completeness! We intended to show the range of connectors possible, but there is not yet feature parity.***
 
-If you'd like to ingest data from another platform, see the documentation for [adding a new connector](new_connector.md).
+If you'd like to ingest data from another platform, see the documentation for [adding a new connector](../new_connector.md).
 
 # Nemesis Service Endpoints
 
@@ -72,7 +72,7 @@ metricsServer:
   enabled: true
 ```
 
-If you have not installed Nemesis yet, see [Nemesis Chart](./installation/nemesis_chart.md) or upgrade the installation:
+If you have not installed Nemesis yet, see [Nemesis Chart](nemesis_chart.md) or upgrade the installation:
 
 ```bash
 helm upgrade --repo https://specterops.github.io/Nemesis/ [chart name] nemesis
@@ -136,6 +136,6 @@ helm install nemesis-monitoring ./helm/monitoring
 
 
 ## Need additional help?
-If you run into any issues, please see [troubleshooting.md](troubleshooting.md) for common errors/issues.
+If you run into any issues, please see [troubleshooting.md](../troubleshooting.md) for common errors/issues.
 
 Otherwise, [file an issue](https://github.com/SpecterOps/Nemesis/issues) or feel free to ask questions in the [#nemesis-chat channel](https://bloodhoundhq.slack.com/archives/C05KN15CCGP) in the Bloodhound Slack ([click here to join](https://ghst.ly/BHSlack)).

@@ -18,7 +18,7 @@ sudo unzip protoc-21.5-linux-x86_64.zip -d /usr/local/
 ```
 </details>
 
-**Also ensure you have minikube and skaffold setup from the [setup](./setup.md) guide.**
+**Also ensure you have minikube and skaffold setup from the [setup](./installation/setup.md) guide.**
 
 # Running Nemesis during Dev
 

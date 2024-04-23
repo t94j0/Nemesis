@@ -1,6 +1,6 @@
 # Nemesis Usage Guide
 
-This page covers usage of Nemesis after the system is properly [setup](setup.md).
+This page covers usage of Nemesis after the system is properly [setup](installation/setup.md).
 
 For a general overview of the Nemesis project structure, see [overview.md](overview.md)
 

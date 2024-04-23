@@ -7,6 +7,51 @@ edit_uri: edit/main/docs/
 exclude_docs: |
   /requirements.txt
 
+nav:
+  - Nemesis: index.md
+  - Quickstart: quickstart.md
+  - Installation:
+    - Setup: installation/setup.md
+    - Requirements: installation/requirements.md
+    - Unsupported Platforms:
+        - installation/requirements_docker_desktop.md
+        - installation/requirements_minikube.md
+    - installation/quickstart_chart.md
+    - installation/nemesis_chart.md
+  - Usage:
+    - usage_guide.md
+    - overview.md
+    - access_nemesis.md
+    - elasticsearch-kibana.md
+    - hasura.md
+    - kubernetes.md
+    - postgres.md
+    - rabbitmq.md
+    - submit_to_nemesis.md
+    - troubleshooting.md
+  - Developer:
+    - development.md
+    - new_connector.md
+    - new_seatbelt_datatype_ingestion.md
+    - new_service.md
+    - new_odr_datatype.md
+    - remote_debugging.md
+  - Operational Data References:
+    - odr/README.md
+    - References:
+      - odr/references/authentication_data.md
+      - odr/references/cookie.md
+      - odr/references/file_data.md
+      - odr/references/file_information.md
+      - odr/references/network_connection.md
+      - odr/references/path_list.md
+      - odr/references/raw_data.md
+      - Host Data:
+        - odr/references/host_data/named_pipe.md
+        - odr/references/host_data/process.md
+        - odr/references/host_data/registry_value.md
+        - odr/references/host_data/service.md
+
 theme:
   name: material
   locale: en
