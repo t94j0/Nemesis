@@ -41,7 +41,7 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 # Add NGINX repository
 helm repo add nginx https://kubernetes.github.io/ingress-nginx
 # Install NGINX ingress
-helm install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set prometheus.create=true --set prometheus.port=9113 --set tcp.5044="default/nemesis-ls-beats:5044"
+helm install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set prometheus.create=true --set prometheus.port=9113 --set tcp.5044="default/nemesis-ls-beats:5044" --set controller.config."proxy-body-size"="5000m"
 # Install ElasticSearch operator to manage "default" namespace. The managedNamespaces field will need to be configured if you desire to install Nemesis in a different namespace
 helm install elastic-operator elastic/eck-operator --namespace elastic-system --create-namespace --set managedNamespaces='{default}'
 
@@ -68,8 +68,8 @@ EOF
 # reveal creds
 newgrp docker <<EOF
 sleep 30
-export BASIC_AUTH_USER=\$(kubectl get secret operation-creds -o jsonpath="{.data.basic-auth-user}" | base64 -d)
-export BASIC_AUTH_PASSWORD=\$(kubectl get secret operation-creds -o jsonpath="{.data.basic-auth-password}" | base64 -d)
+export BASIC_AUTH_USER=\$(kubectl get secret basic-auth -o jsonpath="{.data.username}" | base64 -d)
+export BASIC_AUTH_PASSWORD=\$(kubectl get secret basic-auth -o jsonpath="{.data.password}" | base64 -d)
 echo -e "\nBasic Auth:\n\t\$BASIC_AUTH_USER:\$BASIC_AUTH_PASSWORD"
 
 HTTPS_SERVICE=\$(minikube service list -n ingress-nginx | grep "https/443" | awk '{print \$6}' | sed -E "s_^https?://__")
