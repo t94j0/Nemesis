@@ -1,9 +1,9 @@
 # Nemesis Installation and Setup
-1. Ensure the [requisite software/hardware is installed](requirements.md).
+1. Ensure the [requisite software/hardware is installed](installation/requirements.md).
 
-2. Run the [`quickstart` Helm chart](quickstart_chart.md) to configure Nemesis's services and secrets.
+2. Run the [`quickstart` Helm chart](installation/quickstart_chart.md) to configure Nemesis's services and secrets.
 
-3. Deploy Nemesis's services by [using its Helm chart](nemesis_chart.md).
+3. Deploy Nemesis's services by [using its Helm chart](installation/nemesis_chart.md).
 
 4. [Setup and access Nemesis](access_nemesis.md).
 
@@ -72,7 +72,7 @@ metricsServer:
   enabled: true
 ```
 
-If you have not installed Nemesis yet, see [Nemesis Chart](nemesis_chart.md) or upgrade the installation:
+If you have not installed Nemesis yet, see [Nemesis Chart](./installation/nemesis_chart.md) or upgrade the installation:
 
 ```bash
 helm upgrade --repo https://specterops.github.io/Nemesis/ [chart name] nemesis
