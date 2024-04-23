@@ -16,8 +16,8 @@ nav:
     - Unsupported Platforms:
         - installation/requirements_docker_desktop.md
         - installation/requirements_minikube.md
-    - installation/quickstart_chart.md
-    - installation/nemesis_chart.md
+    - Quickstart Chart: installation/quickstart_chart.md
+    - Nemesis Chart: installation/nemesis_chart.md
   - Usage:
     - usage_guide.md
     - overview.md
